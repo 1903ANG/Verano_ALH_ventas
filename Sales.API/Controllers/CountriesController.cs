@@ -22,10 +22,36 @@ namespace Sales.API.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync(Country country)
         {
-            _context.Countries.Add(country);
+            try 
+            {
 
-            await _context.SaveChangesAsync();
-            return Ok(country);
+                _context.Countries.Add(country);
+
+                await _context.SaveChangesAsync();
+                return Ok(country);
+
+            } 
+            catch (DbUpdateException dbUpdateException)
+            {
+                
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+
+                    return BadRequest("Ya existe un país con el mismo nombre");
+
+                }
+
+                //return BadRequest(dbUpdateException.Message);
+                return BadRequest("Ya existe un país con el mismo nombre");
+
+            }
+            catch (Exception exception)
+            {
+
+                return BadRequest(exception.Message);
+
+            }
+
         }
 
         // METODO GET
@@ -53,9 +79,34 @@ namespace Sales.API.Controllers
         public async Task<ActionResult> PutAsync(Country country)
         {
 
-            _context.Update(country);
-            await _context.SaveChangesAsync();
-            return Ok(country);
+            try
+            {
+
+                _context.Update(country);
+                await _context.SaveChangesAsync();
+                return Ok(country);
+
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+
+                    return BadRequest("Ya existe un país con el mismo nombre");
+
+                }
+
+                //return BadRequest(dbUpdateException.Message);
+                return BadRequest("Ya existe un país con el mismo nombre");
+
+            }
+            catch (Exception exception)
+            {
+
+                return BadRequest(exception.Message);
+
+            }
 
         }
 
